@@ -351,32 +351,107 @@ function group(array, keySelector, valueSelector) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  resultString: '',
+  hasElement: false,
+  hasId: false,
+  hasPseudoElement: false,
+  currentIndex: 0,
+
+  element(value) {
+    this.checkElementExist(this.hasElement);
+
+    const index = 1;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.hasElement = true;
+    resultObj.resultString += value;
+    return resultObj;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.checkElementExist(this.hasId);
+
+    const index = 2;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.hasId = true;
+    resultObj.resultString += `#${value}`;
+    return resultObj;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const index = 3;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.resultString += `.${value}`;
+    return resultObj;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    const index = 4;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.resultString += `[${value}]`;
+    return resultObj;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    const index = 5;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.resultString += `:${value}`;
+    return resultObj;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.checkElementExist(this.hasPseudoElement);
+
+    const index = 6;
+    this.checkIndex(index);
+
+    const resultObj = Object.create(this);
+    resultObj.currentIndex = index;
+    resultObj.hasPseudoElement = true;
+    resultObj.resultString += `::${value}`;
+    return resultObj;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const first = selector1.stringify();
+    const second = selector2.stringify();
+    const resultObj = Object.create(this);
+    resultObj.resultString = `${first} ${combinator} ${second}`;
+    return resultObj;
+  },
+
+  stringify() {
+    return this.resultString;
+  },
+
+  checkIndex(index) {
+    if (index < this.currentIndex) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+      );
+    }
+  },
+
+  checkElementExist(el) {
+    if (el) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector'
+      );
+    }
   },
 };
 
