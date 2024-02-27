@@ -283,10 +283,19 @@ function sortCitiesArray(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const result = array.reduce((acc, current) => {
+    const key = keySelector(current);
+    const value = valueSelector(current);
+    if (acc[key]) {
+      acc[key].push(value);
+    } else {
+      acc[key] = [value];
+    }
+    return acc;
+  }, {});
+  return new Map(Object.entries(result));
 }
-
 /**
  * Css selectors builder
  *
